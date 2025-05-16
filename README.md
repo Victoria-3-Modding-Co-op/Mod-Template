@@ -52,7 +52,9 @@ The command can be run by either opening a Terminal or by pressing Win + R and p
 
 ### Linux
 
-You know how to do this.
+```
+ln -s "~/path/to/mod/directory/in/the/repo" "~/.local/share/Paradox Interactive/Victoria 3/mod/your-mod-folder"
+```
 
 ## Open the Launcher
 
