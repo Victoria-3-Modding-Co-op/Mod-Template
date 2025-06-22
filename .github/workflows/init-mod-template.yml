@@ -38,13 +38,14 @@ jobs:
 
       - name: Determine mod name
         id: modname
+        env:
+          REPO_NAME: ${{ github.repository }}
         run: |
           if [[ -n "${{ inputs.MOD_NAME }}" ]]; then
-            echo "name=${{ inputs.MOD_NAME }}" >> $GITHUB_OUTPUT
+            echo "name=${{ inputs.MOD_NAME }}" >> "$GITHUB_OUTPUT"
           else
-            repo="${{ github.repository }}"
-            name="${repo##*/}"
-            echo "name=$name" >> $GITHUB_OUTPUT
+            name="${REPO_NAME##*/}"
+            echo "name=$name" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Validate abbreviation is lowercase
@@ -94,14 +95,16 @@ jobs:
             file="mod/.metadata/metadata.json"
             [[ -f "$file" ]] || exit 0
 
-            sed -i "s#^\"name\"[[:space:]]*:[[:space:]]*\".*\"#\"name\" : \"$MODNAME\"#" "$file"
-            sed -i "s#^\"version\"[[:space:]]*:[[:space:]]*\".*\"#\"version\" : \"$MOD_VERSION\"#" "$file"
-            sed -i "s#^\"tags\"[[:space:]]*:[[:space:]]*{.*}#\"tags\" : {$MOD_TAGS}#" "$file"
-            sed -i "s#^\"picture\"[[:space:]]*:[[:space:]]*\".*\"#\"picture\" : \"$MOD_PICTURE\"#" "$file"
+            sed -i "s#^\"name\" *= *.*#\"name\"=\"$MODNAME\"#" "$file"
+            sed -i "s#^\"version\" *= *.*#\"version\"=\"$MOD_VERSION\"#" "$file"
+            sed -i "s#^\"tags\" *= *.*#\"tags\"={$MOD_TAGS}#" "$file"
+            sed -i "s#^\"picture\" *= *.*#\"picture\"=\"$MOD_PICTURE\"#" "$file"
+
+
 
             # set id to com.github.<owner>.<repo>
             # This is a common convention for mod IDs in many modding communities
-            sed -i "s#^\"id\"[[:space:]]*:[[:space:]]*\".*\"#\"id\" : \"com.github.${{ github.repository_owner }}.${{ github.event.repository.name }}\"#" "$file"
+            #sed -i "s#^\"id\"[[:space:]]*:[[:space:]]*\".*\"#\"id\" : \"com.github.${{ github.repository_owner }}.${{ github.event.repository.name }}\"#" "$file"
 
       - name: Commit and push changes
         run: |
