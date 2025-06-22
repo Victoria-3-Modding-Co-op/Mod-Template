@@ -98,39 +98,23 @@ jobs:
               exit 1
             fi
 
-            # Update "name" field
-            if grep -q '^"name"' "$file"; then
-                sed -i "s#^\"name\" *= *.*#\"name\"=\"$MODNAME\"#" "$file"
-            else
-                echo "::warning::No \"name\" field found in $file"
-            fi
-
-            # Update "version" field
-            if grep -q '^"version"' "$file"; then
-                sed -i "s#^\"version\" *= *.*#\"version\"=\"$MOD_VERSION\"#" "$file"
-            else
-                echo "::warning::No \"version\" field found in $file"
-            fi
-
-            # Update "tags" field
-            if grep -q '^"tags"' "$file"; then
-                sed -i "s#^\"tags\" *= *.*#\"tags\"={$MOD_TAGS}#" "$file"
-            else
-                echo "::warning::No \"tags\" field found in $file"
-            fi
-
-            # Update "picture" field
-            if grep -q '^"picture"' "$file"; then
-                sed -i "s#^\"picture\" *= *.*#\"picture\"=\"$MOD_PICTURE\"#" "$file"
-            else
-                echo "::warning::No \"picture\" field found in $file"
-            fi
-
-
-
-            # set id to com.github.<owner>.<repo>
-            # This is a common convention for mod IDs in many modding communities
-            #sed -i "s#^\"id\"[[:space:]]*:[[:space:]]*\".*\"#\"id\" : \"com.github.${{ github.repository_owner }}.${{ github.event.repository.name }}\"#" "$file"
+            # Overwrite metadata.json with new values
+            cat > "$file" <<EOF
+            {
+            "name" : "$MODNAME",
+            "id" : "com.github.${{ github.repository_owner }}.${{ github.event.repository.name }}",
+            "version" : "$MOD_VERSION",
+            "game_id" : "victoria3",
+            "picture" : "$MOD_PICTURE",
+            "supported_game_version" : "1.8.*",
+            "short_description" : "Description of your Mod",
+            "tags" : [${MOD_TAGS}],
+            "relationships" : [],
+            "game_custom_data" : {
+                "multiplayer_synchronized" : true
+            }
+            }
+            EOF
 
       - name: Commit and push changes
         run: |
