@@ -93,7 +93,10 @@ jobs:
         run: |
             # Update mod/.metadata/metadata.json
             file="mod/.metadata/metadata.json"
-            [[ -f "$file" ]] || exit 0
+            if [[ ! -f "$file" ]]; then
+              echo "::error::File $file does not exist."
+              exit 1
+            fi
 
             sed -i "s#^\"name\" *= *.*#\"name\"=\"$MODNAME\"#" "$file"
             sed -i "s#^\"version\" *= *.*#\"version\"=\"$MOD_VERSION\"#" "$file"
