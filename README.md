@@ -1,8 +1,6 @@
 # Overview
 This is a template to create a new repository for a Victoria 3 mod.
 
-testline to fork
-
 # Content
 - [Setup](#setup)
   - [Creating your own Repository](#creating-your-own-repository)
