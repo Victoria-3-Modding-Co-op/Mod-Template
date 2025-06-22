@@ -1,0 +1,13 @@
+﻿on_game_started = {
+    on_actions = {
+        on_ABBREVIATION_PLACEHOLDER_start
+    }
+}
+on_ABBREVIATION_PLACEHOLDER_start = {
+    effect = {
+        set_global_variable = {
+            name = ABBREVIATION_PLACEHOLDER_is_loaded
+            value = yes
+        }
+    }
+}
