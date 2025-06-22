@@ -99,6 +99,9 @@ jobs:
             sed -i "s#^\"tags\"[[:space:]]*:[[:space:]]*{.*}#\"tags\" : {$MOD_TAGS}#" "$file"
             sed -i "s#^\"picture\"[[:space:]]*:[[:space:]]*\".*\"#\"picture\" : \"$MOD_PICTURE\"#" "$file"
 
+            # set id to com.github.<owner>.<repo>
+            # This is a common convention for mod IDs in many modding communities
+            sed -i "s#^\"id\"[[:space:]]*:[[:space:]]*\".*\"#\"id\" : \"com.github.${{ github.repository_owner }}.${{ github.event.repository.name }}\"#" "$file"
 
       - name: Commit and push changes
         run: |
