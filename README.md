@@ -36,29 +36,31 @@ Edit the [mod/.metadata/metadata.json](mod/.metadata/metadata.json) file directl
 
 **Automated via GitHub Action:**
 
-Use the provided GitHub Actions workflow to initialize your mod's metadata and abbreviation automatically.  
-In addition to setting up your abbreviation, the workflow also:
+You can automatically initialize your mod's metadata and abbreviation using the included GitHub Actions workflow.  
+This workflow not only sets up your abbreviation, but also:
 
-- Creates a unique global variable (e.g., `on_mod_loaded_<your_abbreviation>`) that is useful for compatibility with other mods.
-- Blocks errors related to this global variable, since you typically won't use it directly within your own mod.
+- Generates a unique global variable (e.g., `on_mod_loaded_<your_abbreviation>`) to improve compatibility with other mods.
+- Suppresses errors related to this variable, so you won't see unnecessary warnings during development, since you typically won't use it directly within your own mod.
 
-This ensures better compatibility and prevents unnecessary error messages during development.
+This automation streamlines setup and helps avoid common issues.
+
+**To use the workflow:**
 
 1. **Enable write permissions for the workflow in the repository settings**
   - Go to your repository's **Settings**.
-  - Under **Actions > General**, find **Workflow permissions**.
+  - Under **Actions > General**, locate **Workflow permissions**.
   - Select **Read and write permissions** and click **Save**.
 
-2. **Run the `Initialize Mod Template` Action**
-  - Open the **Actions** tab in your repository and select the **`Initialize Mod Template`** workflow.
-  - Start the workflow by entering the required abbreviation or prefix. Optional fields can be filled out as needed.
-  - After the workflow completes, check the file [mod/events/abbreviation_event.txt](mod/events/abbreviation_event.txt):
-    - The first line should no longer be `namespace = ABBREVIATION_PLACEHOLDER_error_suppression"`.
-    - It should now reflect the abbreviation you provided in the workflow inputs.
+2. **Run the `Initialize Mod Template` workflow**
+  - Open the **Actions** tab in your repository.
+  - Select the **`Initialize Mod Template`** workflow.
+  - Start the workflow and enter your desired abbreviation or prefix. Fill in any optional fields as needed.
+  - When the workflow finishes, check [mod/events/abbreviation_event.txt](mod/events/abbreviation_event.txt):
+    - The first line should now use your abbreviation instead of `ABBREVIATION_PLACEHOLDER_error_suppression`.
 
-If you want to see what options are available in the workflow, you can check the provided screenshot of the inputs in `documentation/workflow.png`.
+For a visual guide to the workflow options, see the screenshot in `documentation/workflow.png`.
 
-This workflow automates the process of setting up your mod's abbreviation and ensures your files are correctly initialized for development.
+Using this workflow ensures your mod's abbreviation is set up correctly and your files are ready for development.
 
 ## Adding your Mod to the Game
 
