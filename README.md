@@ -56,7 +56,7 @@ This ensures better compatibility and prevents unnecessary error messages during
     - The first line should no longer be `namespace = ABBREVIATION_PLACEHOLDER_error_suppression"`.
     - It should now reflect the abbreviation you provided in the workflow inputs.
 
-  ![Possible workflow inputs with explanations](documentation/workflow.png)
+If you want to see what options are available in the workflow, you can check the provided screenshot of the inputs in `documentation/workflow.png`.
 
 This workflow automates the process of setting up your mod's abbreviation and ensures your files are correctly initialized for development.
 
