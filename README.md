@@ -34,6 +34,10 @@ Edit the [mod/.metadata/metadata.json](mod/.metadata/metadata.json) file directl
 - id
 - short_description
 
+If you choose the manual approach, it is important that you also delete the following files:
+- `mod/events/ABBREVIATION_PLACEHOLDER_events.txt`
+- `mod/common/on_action/ABBREVIATION_PLACEHOLDER_on_actions.txt`
+
 **Automated via GitHub Action:**
 
 You can automatically initialize your mod's metadata and abbreviation using the included GitHub Actions workflow.  
