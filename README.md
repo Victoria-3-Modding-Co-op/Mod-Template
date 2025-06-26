@@ -26,13 +26,29 @@ If you are new to git and GitHub please read up on how to do this.
 
 ## Adjusting Mod Metadata
 
-The first action you should take is to configure your new mods' metadata.
-This is done by editing the [mod/.metadata/metadata.json](mod/.metadata/metadata.json) file.
+You can set up your mod's metadata in one of two ways:
 
-The important things to change are:
+**Manual approach:**
+Edit the [mod/.metadata/metadata.json](mod/.metadata/metadata.json) file directly. The important things to change are:
 - name
 - id
 - short_description
+
+**Automated via GitHub Action (recommended for must-haves):**
+Use the provided GitHub Actions workflow to initialize your mod's metadata and abbreviation automatically:
+
+1. **Enable write permissions for the workflow in the repository settings**
+   - Go to your repository's **Settings**.
+   - Under **Actions > General**, find **Workflow permissions**.
+   - Select **Read and write permissions** and click **Save**.
+2. **Run the `Initialize Mod Template` Action**
+   - Open the **Actions** tab in your repository and select the **`Initialize Mod Template`** workflow.
+   - Start the workflow by entering the required abbreviation or prefix. Optional fields can be filled out as needed.
+   - After the workflow completes, check the file [mod/events/abbreviation_event.txt](mod/events/abbreviation_event.txt):
+     - The first line should no longer be `namespace = ABBREVIATION_PLACEHOLDER_error_suppression"`.
+     - It should now reflect the abbreviation you provided in the workflow inputs.
+
+This workflow automates the process of setting up your mod's abbreviation and ensures your files are correctly initialized for development.
 
 ## Adding your Mod to the Game
 
