@@ -34,8 +34,14 @@ Edit the [mod/.metadata/metadata.json](mod/.metadata/metadata.json) file directl
 - id
 - short_description
 
-**Automated via GitHub Action (recommended for must-haves):**
-Use the provided GitHub Actions workflow to initialize your mod's metadata and abbreviation automatically:
+**Automated via GitHub Action :**
+Use the provided GitHub Actions workflow to initialize your mod's metadata and abbreviation automatically.  
+In addition to setting up your abbreviation, the workflow also:
+
+- Creates a unique global variable (e.g., `on_mod_loaded_<your_abbreviation>`) that is useful for compatibility with other mods.
+- Blocks errors related to this global variable, since you typically won't use it directly within your own mod.
+
+This ensures better compatibility and prevents unnecessary error messages during development.
 
 1. **Enable write permissions for the workflow in the repository settings**
    - Go to your repository's **Settings**.
