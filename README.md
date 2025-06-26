@@ -34,9 +34,9 @@ Edit the [mod/.metadata/metadata.json](mod/.metadata/metadata.json) file directl
 - id
 - short_description
 
-If you choose the manual approach, it is important that you also delete the following files:
-- `mod/events/ABBREVIATION_PLACEHOLDER_events.txt`
-- `mod/common/on_action/ABBREVIATION_PLACEHOLDER_on_actions.txt`
+> ⚠️ **Important:** If you choose the manual approach, you must also delete the following files:
+> - `mod/events/ABBREVIATION_PLACEHOLDER_events.txt`
+> - `mod/common/on_action/ABBREVIATION_PLACEHOLDER_on_actions.txt`
 
 **Automated via GitHub Action:**
 
