@@ -34,7 +34,8 @@ Edit the [mod/.metadata/metadata.json](mod/.metadata/metadata.json) file directl
 - id
 - short_description
 
-**Automated via GitHub Action :**
+**Automated via GitHub Action:**
+
 Use the provided GitHub Actions workflow to initialize your mod's metadata and abbreviation automatically.  
 In addition to setting up your abbreviation, the workflow also:
 
@@ -44,15 +45,18 @@ In addition to setting up your abbreviation, the workflow also:
 This ensures better compatibility and prevents unnecessary error messages during development.
 
 1. **Enable write permissions for the workflow in the repository settings**
-   - Go to your repository's **Settings**.
-   - Under **Actions > General**, find **Workflow permissions**.
-   - Select **Read and write permissions** and click **Save**.
+  - Go to your repository's **Settings**.
+  - Under **Actions > General**, find **Workflow permissions**.
+  - Select **Read and write permissions** and click **Save**.
+
 2. **Run the `Initialize Mod Template` Action**
-   - Open the **Actions** tab in your repository and select the **`Initialize Mod Template`** workflow.
-   - Start the workflow by entering the required abbreviation or prefix. Optional fields can be filled out as needed.
-   - After the workflow completes, check the file [mod/events/abbreviation_event.txt](mod/events/abbreviation_event.txt):
-     - The first line should no longer be `namespace = ABBREVIATION_PLACEHOLDER_error_suppression"`.
-     - It should now reflect the abbreviation you provided in the workflow inputs.
+  - Open the **Actions** tab in your repository and select the **`Initialize Mod Template`** workflow.
+  - Start the workflow by entering the required abbreviation or prefix. Optional fields can be filled out as needed.
+  - After the workflow completes, check the file [mod/events/abbreviation_event.txt](mod/events/abbreviation_event.txt):
+    - The first line should no longer be `namespace = ABBREVIATION_PLACEHOLDER_error_suppression"`.
+    - It should now reflect the abbreviation you provided in the workflow inputs.
+
+  ![Possible workflow inputs with explanations](documentation/workflow.png)
 
 This workflow automates the process of setting up your mod's abbreviation and ensures your files are correctly initialized for development.
 
