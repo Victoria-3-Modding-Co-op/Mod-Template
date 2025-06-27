@@ -1,0 +1,136 @@
+name: Initialize Mod Template
+
+on:
+  workflow_dispatch:
+    inputs:
+      MOD_NAME:
+        description: 'Name of the mod (defaults to repo name if not provided)'
+        required: false
+        type: string
+      ABBREVIATION:
+        description: 'Short, lowercase identifier (prefix) used throughout mod files to uniquely reference your mod. Example: mrfp.'
+        required: true
+        type: string
+      MOD_VERSION:
+        description: 'Version of the mod (version field in metadata.json)'
+        required: false
+        default: '0.1.0'
+        type: string
+      MOD_TAGS:
+        description: |
+          Tags for the mod (tags field in metadata.json).
+          Select any combination of the following, separated by commas:
+          Alternative History, Balance, Cultures and Religions, Diplomacy, Events, Expansion, Economy and Buildings, Fixes, Flags, Gameplay, Graphics, Historical, Interest Groups, Journal Entries, Map, New Nations, Pops, Sound, Technologies, Total Conversion, Trade, Translation, Utilities
+        required: false
+        type: string
+      MOD_PICTURE:
+        description: 'Picture for the mod (picture field in metadata.json)'
+        required: false
+        default: 'thumbnail.png'
+        type: string
+
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine mod name
+        id: modname
+        env:
+          REPO_NAME: ${{ github.repository }}
+        run: |
+          if [[ -n "${{ inputs.MOD_NAME }}" ]]; then
+            echo "name=${{ inputs.MOD_NAME }}" >> "$GITHUB_OUTPUT"
+          else
+            name="${REPO_NAME##*/}"
+            echo "name=$name" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate abbreviation is lowercase
+        run: |
+          abbr="${{ inputs.ABBREVIATION }}"
+          if [[ "$abbr" != "${abbr,,}" ]]; then
+            echo "::error::ABBREVIATION must be lowercase. Provided: $abbr"
+            exit 1
+          fi
+
+      - name: Validate tags
+        if: ${{ inputs.MOD_TAGS != '' }}
+        run: |
+          allowed="Alternative History, Balance, Cultures and Religions, Diplomacy, Events, Expansion, Economy and Buildings, Fixes, Flags, Gameplay, Graphics, Historical, Interest Groups, Journal Entries, Map, New Nations, Pops, Sound, Technologies, Total Conversion, Trade, Translation, Utilities"
+          IFS=',' read -ra tags <<< "${{ inputs.MOD_TAGS }}"
+          for tag in "${tags[@]}"; do
+            clean=$(echo "$tag" | xargs)
+            [[ ",$allowed," == *",$clean,"* ]] || { echo "::error::Invalid tag '$clean'"; exit 1; }
+          done
+
+      - name: Replace placeholders
+        env:
+          ABBREV: ${{ inputs.ABBREVIATION }}
+          MODNAME: ${{ steps.modname.outputs.name }}
+        run: |
+          # Replace placeholders in file contents
+          find . -type f -not -path './.git/*' -not -path './.github/*' \
+          -exec sed -i "s#MODNAME_PLACEHOLDER#$MODNAME#g" {} +
+            find . -type f -not -path './.git/*' -not -path './.github/*' \
+          -exec sed -i "s#ABBREVIATION_PLACEHOLDER#$ABBREV#g" {} +
+
+            # Replace placeholders in filenames
+            find . -depth -name '*MODNAME_PLACEHOLDER*' -not -path './.git/*' -not -path './.github/*' \
+          -exec bash -c 'mv "$1" "${1//MODNAME_PLACEHOLDER/$2}"' _ {} "$MODNAME" \;
+
+            find . -depth -name '*ABBREVIATION_PLACEHOLDER*' -not -path './.git/*' -not -path './.github/*' \
+          -exec bash -c 'mv "$1" "${1//ABBREVIATION_PLACEHOLDER/$2}"' _ {} "$ABBREV" \;
+
+      - name: Update metadata.json
+        env:
+          MODNAME: ${{ steps.modname.outputs.name }}
+          MOD_VERSION: ${{ inputs.MOD_VERSION }}
+          MOD_TAGS: ${{ inputs.MOD_TAGS }}
+          MOD_PICTURE: ${{ inputs.MOD_PICTURE }}
+        run: |
+            # Update mod/.metadata/metadata.json
+            file="mod/.metadata/metadata.json"
+            if [[ ! -f "$file" ]]; then
+              echo "::error::File $file does not exist."
+              exit 1
+            fi
+
+            # Overwrite metadata.json with new values
+            cat > "$file" <<EOF
+            {
+            "name" : "$MODNAME",
+            "id" : "com.github.${{ github.repository_owner }}.${{ github.event.repository.name }}",
+            "version" : "$MOD_VERSION",
+            "game_id" : "victoria3",
+            "picture" : "$MOD_PICTURE",
+            "supported_game_version" : "1.8.*",
+            "short_description" : "Description of your Mod",
+            "tags" : [${MOD_TAGS}],
+            "relationships" : [],
+            "game_custom_data" : {
+                "multiplayer_synchronized" : true
+            }
+            }
+            EOF
+
+      - name: Commit and push changes
+        run: |
+         git config user.name "github-actions[bot]"
+         git config user.email "${{ github.actor_id }}+github-actions[bot]@users.noreply.github.com"
+         git add .
+         git commit -m "Initialize mod template with repo name and description" || echo "No changes to commit"
+         set -e
+         if ! git push; then
+           if grep -q 'Everything up-to-date' <(git status) || grep -q 'No changes to push' git_push_error.log 2>/dev/null; then
+             echo "No changes to push"
+           else
+             echo "::error::Failed to push changes. This is likely due to missing write permissions for the workflow token or user. You need to enable write permissions for the workflow in the repository settings (Actions-> General-> Workflow permissions-> Read and write permissions)."
+             git push 2>git_push_error.log || true
+             cat git_push_error.log
+             exit 1
+           fi
+         fi
+         set +e

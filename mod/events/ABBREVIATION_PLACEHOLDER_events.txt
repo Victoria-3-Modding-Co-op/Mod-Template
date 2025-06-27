@@ -1,0 +1,9 @@
+﻿namespace = ABBREVIATION_PLACEHOLDER_error_suppression
+
+ABBREVIATION_PLACEHOLDER_error_suppression.0001 = {
+  hidden = yes
+  orphan = yes
+  trigger = {
+    exists = global_var:ABBREVIATION_PLACEHOLDER_is_loaded
+  }
+}
