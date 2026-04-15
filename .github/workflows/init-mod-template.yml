@@ -28,6 +28,10 @@ on:
         required: false
         default: 'thumbnail.png'
         type: string
+      MOD_DESCRIPTION:
+        description: 'Short description of the mod (leave empty to preserve existing)'
+        required: false
+        type: string
 
 jobs:
   initialize:
@@ -59,12 +63,20 @@ jobs:
       - name: Validate tags
         if: ${{ inputs.MOD_TAGS != '' }}
         run: |
-          allowed="Alternative History, Balance, Cultures and Religions, Diplomacy, Events, Expansion, Economy and Buildings, Fixes, Flags, Gameplay, Graphics, Historical, Interest Groups, Journal Entries, Map, New Nations, Pops, Sound, Technologies, Total Conversion, Trade, Translation, Utilities"
+          # Keep the list comma-delimited without padding spaces so exact matches succeed
+          allowed="Alternative History,Balance,Cultures And Religions,Diplomacy,Events,Expansion,Economy And Buildings,Fixes,Flags,Gameplay,Graphics,Historical,Interest Groups,Journal Entries,Map,New Nations,Pops,Sound,Technologies,Total Conversion,Trade,Translation,Utilities"
           IFS=',' read -ra tags <<< "${{ inputs.MOD_TAGS }}"
           for tag in "${tags[@]}"; do
             clean=$(echo "$tag" | xargs)
             [[ ",$allowed," == *",$clean,"* ]] || { echo "::error::Invalid tag '$clean'"; exit 1; }
           done
+          # Build a JSON-safe, trimmed tag list for later steps
+          tag_json=""
+          for tag in "${tags[@]}"; do
+            clean=$(echo "$tag" | xargs)
+            tag_json+="\"$clean\"," 
+          done
+          echo "TAGS_JSON=${tag_json%,}" >> "$GITHUB_ENV"
 
       - name: Replace placeholders
         env:
@@ -90,12 +102,35 @@ jobs:
           MOD_VERSION: ${{ inputs.MOD_VERSION }}
           MOD_TAGS: ${{ inputs.MOD_TAGS }}
           MOD_PICTURE: ${{ inputs.MOD_PICTURE }}
+          MOD_DESCRIPTION: ${{ inputs.MOD_DESCRIPTION }}
+          TAGS_JSON: ${{ env.TAGS_JSON }}
         run: |
             # Update mod/.metadata/metadata.json
             file="mod/.metadata/metadata.json"
             if [[ ! -f "$file" ]]; then
               echo "::error::File $file does not exist."
               exit 1
+            fi
+
+            # Read existing values if they exist
+            existing_description=$(grep -Po '"short_description"\s*:\s*"\K[^"]*' "$file" || echo "")
+            existing_supported_version=$(grep -Po '"supported_game_version"\s*:\s*"\K[^"]*' "$file" || echo "1.12.*")
+            existing_tags=$(grep -Po '"tags"\s*:\s*\K\[[^\]]*\]' "$file" || echo "[]")
+            
+            # Use input values only if provided, otherwise preserve existing
+            if [[ -n "$MOD_DESCRIPTION" ]]; then
+              final_description="$MOD_DESCRIPTION"
+            else
+              final_description="$existing_description"
+            fi
+            
+            final_supported_version="${existing_supported_version}"
+            
+            # If tags input was provided, use it; otherwise preserve existing
+            if [[ -n "$TAGS_JSON" ]]; then
+              tags_value="[${TAGS_JSON}]"
+            else
+              tags_value="$existing_tags"
             fi
 
             # Overwrite metadata.json with new values
@@ -106,9 +141,9 @@ jobs:
             "version" : "$MOD_VERSION",
             "game_id" : "victoria3",
             "picture" : "$MOD_PICTURE",
-            "supported_game_version" : "1.8.*",
-            "short_description" : "Description of your Mod",
-            "tags" : [${MOD_TAGS}],
+            "supported_game_version" : "$final_supported_version",
+            "short_description" : "$final_description",
+            "tags" : $tags_value,
             "relationships" : [],
             "game_custom_data" : {
                 "multiplayer_synchronized" : true

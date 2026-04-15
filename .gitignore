@@ -4,3 +4,4 @@ gate.iml
 *.bkp
 *.dtmp
 /cmf
+*.code-workspace
