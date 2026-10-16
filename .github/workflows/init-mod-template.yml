@@ -20,7 +20,7 @@ on:
         description: |
           Tags for the mod (tags field in metadata.json).
           Select any combination of the following, separated by commas:
-          Alternative History, Balance, Cultures and Religions, Diplomacy, Events, Expansion, Economy and Buildings, Fixes, Flags, Gameplay, Graphics, Historical, Interest Groups, Journal Entries, Map, New Nations, Pops, Sound, Technologies, Total Conversion, Trade, Translation, Utilities
+          Alternative History, Balance, Cultures And Religions, Diplomacy, Events, Expansion, Economy And Buildings, Fixes, Flags, Gameplay, Graphics, Historical, Interest Groups, Journal Entries, Map, New Nations, Pops, Sound, Technologies, Total Conversion, Trade, Translation, Utilities
         required: false
         type: string
       MOD_PICTURE:
